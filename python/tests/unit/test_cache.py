@@ -34,8 +34,7 @@ class Builder:
 
         self.test_dir = os.path.join(
             os.path.dirname(os.path.abspath(__file__)),
-            "test_cache_data"
-        )
+            "testdata")
 
         self.cache: Optional[Cache] = None
 

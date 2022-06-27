@@ -104,14 +104,14 @@ def test_acme_privatekey_secrets(caplog: pytest.LogCaptureFixture):
 
     badsnap_log_errors, badsnap_aconf_errors = _get_errors(caplog, "test_acme_privatekey_secrets-bad", os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        "test_general_data",
+        "testdata",
         "test-acme-private-key-snapshot-bad.json"))
     assert badsnap_log_errors
     assert not badsnap_aconf_errors, "Wanted no aconf errors but got:%s" % "".join([f"{nl}    {err}" for err in badsnap_aconf_errors])
 
     goodsnap_log_errors, goodsnap_aconf_errors = _get_errors(caplog, "test_acme_privatekey_secrets", os.path.join(
         os.path.dirname(os.path.abspath(__file__)),
-        "test_general_data",
+        "testdata",
         "test-acme-private-key-snapshot.json"))
     assert not goodsnap_log_errors, "Wanted no logged errors bug got:%s" % "".join([f"{nl}    {logging.getLevelName(rec[1])}{tab}{rec[0]}:{rec[2]}" for rec in goodsnap_log_errors])
     assert not goodsnap_aconf_errors, "Wanted no aconf errors but got:%s" % "".join([f"{nl}    {err}" for err in goodsnap_aconf_errors])
