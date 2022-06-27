@@ -26,7 +26,7 @@ from yaml.scanner import ScannerError as YAMLScanError
 
 import tests.integration.manifests as integration_manifests
 from .parser import dump, load, Tag, SequenceView
-from tests.manifests import httpbin_manifests, websocket_echo_server_manifests, cleartext_host_manifest, default_listener_manifest
+from tests.manifests import websocket_echo_server_manifests, cleartext_host_manifest, default_listener_manifest
 from tests.kubeutils import apply_kube_artifacts
 
 import yaml as pyyaml
@@ -296,12 +296,7 @@ class Name(str):
 
     @property
     def fqdn(self):
-        r = self.k8s
-
-        if self.namespace and (self.namespace != 'default'):
-            r += '.' + self.namespace
-
-        return r
+        return '.'.join([self.k8s, self.namespace, 'svc', 'cluster', 'default'])
 
 class NodeLocal(threading.local):
     current: Optional['Node']
@@ -1645,10 +1640,9 @@ class Runner:
                 raise RuntimeError('Could not apply manifests')
             self.applied_manifests = True
 
-        # Finally, install httpbin and the websocket-echo-server.
-        print(f"applying http_manifests + websocket_echo_server_manifests to namespaces: {namespaces}")
+        # Finally, install the websocket-echo-server.
+        print(f"applying websocket_echo_server_manifests to namespaces: {namespaces}")
         for namespace in namespaces:
-            apply_kube_artifacts(namespace, httpbin_manifests)
             apply_kube_artifacts(namespace, websocket_echo_server_manifests)
 
         for n in self.nodes:

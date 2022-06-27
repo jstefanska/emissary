@@ -6,7 +6,8 @@ from pathlib import Path
 import pytest
 
 from tests.selfsigned import TLSCerts
-from tests.utils import assert_valid_envoy_config, module_and_mapping_manifests
+from tests.utils import assert_valid_envoy_config
+from tests.unit.utils import module_and_mapping_manifests
 
 logging.basicConfig(
     level=logging.INFO,
@@ -32,7 +33,7 @@ class MockSecretHandler(SecretHandler):
 
 
 def _get_envoy_config(yaml):
-    
+
     aconf = Config()
     fetcher = ResourceFetcher(logger, aconf)
     fetcher.parse_yaml(default_listener_manifests() + yaml, k8s=True)
@@ -128,7 +129,7 @@ spec:
                 'collector_endpoint_version': 'HTTP_JSON',
                 'trace_id_128bit': True,
                 'collector_cluster': 'cluster_tracing_zipkin_test_9411_default'
-                
+
             }
         }
     }

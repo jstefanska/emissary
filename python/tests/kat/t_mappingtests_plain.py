@@ -651,7 +651,7 @@ kind: Mapping
 name:  {self.name}
 hostname: "*"
 prefix: /{self.name}/
-service: httpbin.plain-namespace
+service: {self.target.path.fqdn}
 add_response_headers:
     koo:
         append: False
@@ -725,7 +725,7 @@ kind: Mapping
 name:  {self.name}
 hostname: "*"
 prefix: /{self.name}/
-service: httpbin.plain-namespace
+service: {self.target.path.fqdn}
 remove_request_headers:
 - zoo
 - aoo

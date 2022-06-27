@@ -148,24 +148,6 @@ spec:
 
     apply_kube_artifacts(namespace=namespace, artifacts=qotm_mapping)
 
-def create_httpbin_mapping(namespace):
-    httpbin_mapping = f"""
----
-apiVersion: getambassador.io/v3alpha1
-kind: Mapping
-metadata:
-  name:  httpbin-mapping
-  namespace: {namespace}
-spec:
-  hostname: "*"
-  prefix: /httpbin/
-  rewrite: /
-  service: httpbin
-"""
-
-    apply_kube_artifacts(namespace=namespace, artifacts=httpbin_mapping)
-
-
 def get_code_with_retry(req, headers={}):
     for attempts in range(10):
         try:

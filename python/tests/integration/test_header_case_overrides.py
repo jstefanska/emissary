@@ -6,10 +6,9 @@ import sys
 import pytest
 import requests
 
-from tests.integration.utils import install_ambassador, create_httpbin_mapping
+from tests.integration.utils import install_ambassador
 from tests.kubeutils import apply_kube_artifacts
 from tests.runutils import run_and_assert
-from tests.manifests import httpbin_manifests
 
 logging.basicConfig(
     level=logging.INFO,
@@ -24,6 +23,59 @@ from ambassador.ir.irerrorresponse import IRErrorResponse
 from ambassador.envoy import EnvoyConfig
 from ambassador.fetch import ResourceFetcher
 from ambassador.utils import NullSecretHandler
+
+httpbin_manifests="""
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: httpbin
+spec:
+  type: ClusterIP
+  selector:
+    service: httpbin
+  ports:
+  - port: 80
+    targetPort: http
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: httpbin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      service: httpbin
+  template:
+    metadata:
+      labels:
+        service: httpbin
+    spec:
+      containers:
+      - name: httpbin
+        image: kennethreitz/httpbin
+        ports:
+        - name: http
+          containerPort: 80
+"""
+
+def create_httpbin_mapping(namespace):
+    httpbin_mapping = f"""
+---
+apiVersion: getambassador.io/v3alpha1
+kind: Mapping
+metadata:
+  name:  httpbin-mapping
+  namespace: {namespace}
+spec:
+  hostname: "*"
+  prefix: /httpbin/
+  rewrite: /
+  service: httpbin
+"""
+
+    apply_kube_artifacts(namespace=namespace, artifacts=httpbin_mapping)
 
 headerecho_manifests ="""
 ---

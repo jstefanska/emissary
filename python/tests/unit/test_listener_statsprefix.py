@@ -1,4 +1,5 @@
-from tests.utils import econf_compile, econf_foreach_listener, econf_foreach_listener_chain, EnvoyHCMInfo, EnvoyTCPInfo
+from tests.utils import econf_compile, EnvoyHCMInfo, EnvoyTCPInfo
+from tests.unit.utils import econf_foreach_listener, econf_foreach_listener_chain
 
 import pytest
 import json

@@ -1,5 +1,6 @@
 import os
-from tests.utils import assert_valid_envoy_config, econf_compile, module_and_mapping_manifests
+from tests.utils import assert_valid_envoy_config, econf_compile
+from tests.unit.utils import module_and_mapping_manifests
 
 import pytest
 

@@ -67,7 +67,7 @@ name:  {self.name}
 hostname: "*"
 prefix: /{self.name}/status/
 rewrite: /status/
-service: httpbin.default
+service: {self.target.path.fqdn}
 """)
 
     def queries(self):
@@ -103,7 +103,7 @@ name:  {self.name}
 hostname: "*"
 prefix: /{self.name}/status/
 rewrite: /status/
-service: httpbin.default
+service: {self.target.path.fqdn}
 """)
 
     def queries(self):
@@ -132,17 +132,18 @@ name:  {self.name}
 hostname: "*"
 prefix: /{self.name}/status/
 rewrite: /status/
-service: httpbin.default
+service: {self.target.path.fqdn}
 """)
 
     def queries(self):
-        # Sanity test that escaped slashes are not rejected by default. The upstream
-        # httpbin server doesn't know what to do with this request, though, so expect
-        # a 404. In another test, we'll expect HTTP 400 with reject_requests_with_escaped_slashes
+        # Sanity test that escaped slashes are not rejected by default. The upstream kat-server
+        # doesn't know what to do with this request, though, so expect a 404. In another test, we'll
+        # expect HTTP 400 with reject_requests_with_escaped_slashes
         yield Query(self.url(self.name + "/status/%2F200"), expected=404)
 
     def check(self):
-        # We should have observed this 404 upstream from httpbin. The presence of this header verifies that.
+        # We should have observed this 404 upstream from kat-server (self.target). The presence of
+        # this header verifies that.
         print ("headers=%s", repr(self.results[0].headers))
         assert 'X-Envoy-Upstream-Service-Time' in self.results[0].headers
 
@@ -171,7 +172,7 @@ name:  {self.name}
 hostname: "*"
 prefix: /{self.name}/status/
 rewrite: /status/
-service: httpbin
+service: {self.target.path.fqdn}
 """)
 
     def queries(self):
@@ -181,8 +182,8 @@ service: httpbin
         yield Query(self.url(self.name + "/status/%2F200"), expected=400)
 
     def check(self):
-        # We should have not have observed this 400 upstream from httpbin. The absence of this header
-        # suggests that (though does not prove, in theory).
+        # We should have not have observed this 400 upstream from kat-server (self.target).  The
+        # absence of this header suggests that (though does not prove, in theory).
         assert 'X-Envoy-Upstream-Service-Time' not in self.results[0].headers
 
 class LinkerdHeaderMapping(AmbassadorTest):
@@ -304,7 +305,7 @@ spec:
   ambassador_id: [{self.ambassador_id}]
   hostname: "*"
   prefix: /{self.name}-1/
-  service: {self.target.path.fqdn}.default
+  service: {self.target.path.fqdn}
 ---
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping
@@ -315,7 +316,7 @@ spec:
   ambassador_id: [{self.ambassador_id}]
   hostname: "*"
   prefix: /{self.name}-2/
-  service: {self.target.path.fqdn}.default
+  service: {self.target.path.fqdn}
 ''') + super().manifests()
 
     def queries(self):
@@ -338,7 +339,7 @@ metadata:
   name: thisisaverylongservicenameoverwithsixythreecharacters123456789
 spec:
   type: ExternalName
-  externalName: httpbin.default.svc.cluster.local
+  externalName: {self.target.path.fqdn}
 ---
 apiVersion: getambassador.io/v3alpha1
 kind: Mapping

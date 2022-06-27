@@ -1,4 +1,5 @@
-from tests.utils import econf_compile, econf_foreach_hcm, module_and_mapping_manifests
+from tests.utils import econf_compile
+from tests.unit.utils import econf_foreach_hcm, module_and_mapping_manifests
 
 import pytest
 
