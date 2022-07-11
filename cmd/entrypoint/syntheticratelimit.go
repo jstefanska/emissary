@@ -11,9 +11,9 @@ import (
 
 func iterateOverRateLimitServices(sh *SnapshotHolder, cb func(
 	rateLimitService *v3alpha1.RateLimitService, // rateLimitService
-	name string, // name to unambiguously refer to the rateLimitServices by; might be more complex than "name.namespace" if it's an annotation
-	parentName string, // name of the thing that the annotation is on (or empty if not an annotation)
-	idx int, // index of the rateLimitService; either in sh.k8sSnapshot.RateLimitServices or in sh.k8sSnapshot.Annotations[parentName]
+	name string,                                 // name to unambiguously refer to the rateLimitServices by; might be more complex than "name.namespace" if it's an annotation
+	parentName string,                           // name of the thing that the annotation is on (or empty if not an annotation)
+	idx int,                                     // index of the rateLimitService; either in sh.k8sSnapshot.RateLimitServices or in sh.k8sSnapshot.Annotations[parentName]
 )) {
 	envAmbID := GetAmbassadorID()
 
@@ -55,13 +55,17 @@ func ReconcileRateLimit(ctx context.Context, sh *SnapshotHolder, deltas *[]*kate
 		syntheticRateLimitIdx int
 	)
 
+	dlog.Infof(ctx, "Snapshot Ratelimits count %d", len(sh.k8sSnapshot.RateLimitServices))
+	dlog.Infof(ctx, "Snapshot Ratelimits %v", sh.k8sSnapshot.RateLimitServices)
+
 	iterateOverRateLimitServices(sh, func(rateLimitService *v3alpha1.RateLimitService, name, parentName string, i int) {
 		numRateLimitServices++
 
 		dlog.Infof(ctx, "iteration %d : ", numRateLimitServices)
 		if IsLocalhost8500(rateLimitService.Spec.Service) {
 
-			dlog.Infof(ctx, "ratelimit %v", rateLimitService.ObjectMeta)
+			dlog.Infof(ctx, "ratelimit %v :", rateLimitService.ObjectMeta)
+			dlog.Infof(ctx, "parentname %s :", parentName)
 
 			if parentName == "" && rateLimitService.ObjectMeta.Name == syntheticRateLimitServiceName {
 				syntheticRateLimit = rateLimitService
@@ -106,6 +110,7 @@ func ReconcileRateLimit(ctx context.Context, sh *SnapshotHolder, deltas *[]*kate
 			ObjectMeta: syntheticRateLimit.ObjectMeta,
 			DeltaType:  kates.ObjectAdd,
 		})
+
 	case numRateLimitServices > 1 && syntheticRateLimit != nil: // remove the synthetic rate limit service
 		dlog.Debugf(ctx, "ReconcileRateLimitServices: %d user-provided RateLimitServices detected; removing synthetic RateLimitServices", numRateLimitServices-1)
 		sh.k8sSnapshot.RateLimitServices = append(
