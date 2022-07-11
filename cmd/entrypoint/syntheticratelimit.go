@@ -57,7 +57,12 @@ func ReconcileRateLimit(ctx context.Context, sh *SnapshotHolder, deltas *[]*kate
 
 	iterateOverRateLimitServices(sh, func(rateLimitService *v3alpha1.RateLimitService, name, parentName string, i int) {
 		numRateLimitServices++
+
+		dlog.Infof(ctx, "iteration %d : ", numRateLimitServices)
 		if IsLocalhost8500(rateLimitService.Spec.Service) {
+
+			dlog.Infof(ctx, "ratelimit %v", rateLimitService.ObjectMeta)
+
 			if parentName == "" && rateLimitService.ObjectMeta.Name == syntheticRateLimitServiceName {
 				syntheticRateLimit = rateLimitService
 				syntheticRateLimitIdx = i
@@ -72,6 +77,10 @@ func ReconcileRateLimit(ctx context.Context, sh *SnapshotHolder, deltas *[]*kate
 			}
 		}
 	})
+
+	dlog.Infof(ctx, "synthethic ratelimit : %v", syntheticRateLimit)
+
+	dlog.Infof(ctx, "final iteration count %d : ", numRateLimitServices)
 
 	switch {
 	case numRateLimitServices == 0: // add the synthetic rate limit service
