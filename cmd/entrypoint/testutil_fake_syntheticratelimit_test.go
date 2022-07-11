@@ -44,7 +44,7 @@ metadata:
   name: edge-stack-ratelimit-test
   namespace: foo
 spec:
-  protocol_version: v3
+  protocol_version: "v3"
   service: 127.0.0.1:8500
 `)
 			assert.NoError(t, err)
@@ -218,7 +218,7 @@ spec:
 	// Use the predicate above to check that the snapshot contains the synthetic RateLimitService.
 	// The RateLimitService has `protocol_version: v3`, but it has a bogus field, so it should not be
 	// validated, and instead we inject the synthetic RateLimitService.
-	snap, err := f.GetSnapshot(HasRateLimitService("foo", "synthetic_edge_stack_rate_limit"))
+	snap, err := f.GetSnapshot(HasRateLimitService("default", "synthetic_edge_stack_rate_limit"))
 	assert.NoError(t, err)
 	assert.NotNil(t, snap)
 
@@ -229,7 +229,7 @@ spec:
 
 	// Check for a cluster name matching the provided RateLimitService
 	isRateLimitCluster := func(c *v3cluster.Cluster) bool {
-		return strings.Contains(c.Name, "cluster_127_0_0_1_8500_foo")
+		return strings.Contains(c.Name, "cluster_127_0_0_1_8500_default")
 	}
 
 	// Grab the next Envoy config that has an Edge Stack rateLimit cluster on
@@ -357,7 +357,7 @@ spec:
 	// Use the predicate above to check that the snapshot contains the synthetic RateLimitService.
 	// The user-provided RateLimitService is invalid and so it should be ignored and instead we
 	// inject the synthetic RateLimitService.
-	snap, err := f.GetSnapshot(HasRateLimitService("foo", "synthetic_edge_stack_rate_limit"))
+	snap, err := f.GetSnapshot(HasRateLimitService("default", "synthetic_edge_stack_rate_limit"))
 	assert.NoError(t, err)
 	assert.NotNil(t, snap)
 
@@ -368,7 +368,7 @@ spec:
 
 	// Check for a cluster name matching the provided RateLimitService
 	isRateLimitCluster := func(c *v3cluster.Cluster) bool {
-		return strings.Contains(c.Name, "cluster_127_0_0_1_8500_foo")
+		return strings.Contains(c.Name, "cluster_127_0_0_1_8500_default")
 	}
 
 	// Grab the next Envoy config that has an Edge Stack rateLimit cluster on
