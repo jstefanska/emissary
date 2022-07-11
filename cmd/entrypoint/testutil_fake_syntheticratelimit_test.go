@@ -218,7 +218,7 @@ spec:
 	// Use the predicate above to check that the snapshot contains the synthetic RateLimitService.
 	// The RateLimitService has `protocol_version: v3`, but it has a bogus field, so it should not be
 	// validated, and instead we inject the synthetic RateLimitService.
-	snap, err := f.GetSnapshot(HasRateLimitService("default", "synthetic_edge_stack_rate_limit"))
+	snap, err := f.GetSnapshot(HasRateLimitService("foo", "synthetic_edge_stack_rate_limit"))
 	assert.NoError(t, err)
 	assert.NotNil(t, snap)
 
@@ -357,7 +357,7 @@ spec:
 	// Use the predicate above to check that the snapshot contains the synthetic RateLimitService.
 	// The user-provided RateLimitService is invalid and so it should be ignored and instead we
 	// inject the synthetic RateLimitService.
-	snap, err := f.GetSnapshot(HasRateLimitService("default", "synthetic_edge_stack_rate_limit"))
+	snap, err := f.GetSnapshot(HasRateLimitService("foo", "synthetic_edge_stack_rate_limit"))
 	assert.NoError(t, err)
 	assert.NotNil(t, snap)
 
