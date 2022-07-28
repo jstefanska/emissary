@@ -45,6 +45,7 @@ import (
 	"encoding/json"
 	"flag"
 	"fmt"
+	"github.com/emissary-ingress/emissary/v3/pkg/ambex"
 	"io/ioutil"
 	"net"
 	"os"
@@ -480,10 +481,23 @@ func update(
 		secrets = append(secrets, secretv2)
 	}
 
+	dlog.Info(ctx, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+	dlog.Infof(ctx, "sdsSecretsv3 before range : %v", sdsSecretsV3)
+	dlog.Info(ctx, "&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
+
 	for _, secretv3 := range sdsSecretsV3 {
 		dlog.Warnf(ctx, "Updating with V3 secret %s", secretv3.Name)
+
+		dlog.Infof(ctx, "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG")
+		dlog.Info(ctx, secretv3)
+		dlog.Infof(ctx, "GGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGG")
 		secretsv3 = append(secretsv3, secretv3)
 	}
+
+	dlog.Infof(ctx, "!_!_!_!__!_!_!_!_!_!_!_!_!_!__!_!_!_!_!_!_!_!_!__!_!_!_!_!_!_!_!__!_!_!_!_!_!_!!__!_!_!_!")
+	dlog.Info(ctx, secrets)
+	dlog.Info(ctx, secretsv3)
+	dlog.Infof(ctx, "!_!_!_!__!_!_!_!_!_!_!_!_!_!__!_!_!_!_!_!_!_!_!__!_!_!_!_!_!_!_!__!_!_!_!_!_!_!!__!_!_!_!")
 
 	// Create a new configuration snapshot from everything we have just loaded from disk.
 	curgen := *generation
@@ -522,6 +536,22 @@ func update(
 		return nil // TODO: should we return the error, rather than just logging it?
 	}
 
+	time="2022-07-28 15:41:53.1450" level=info msg="snapshot v3 : {[{v8 map[]}" +
+		" {v8 map[cluster_127_0_0_1_8877_emissary:{name:\"cluster_127_0_0_1_8877_emissary\" alt_stat_name:\"127_0_0_1_8877\" type:STRICT_DNS connect_timeout:{seconds:3} load_assignment:{cluster_name:\"cluster_127_0_0_1_8877_emissary\" endpoints:{lb_endpoints:{endpoint:{address:{socket_address:{address:\"127.0.0.1\" port_value:8877}}}}}} dns_lookup_family:V4_ONLY <nil>}]} " +
+		"{v8 map[emissary-ingress-listener-8080-routeconfig-0:{name:\"emissary-ingress-listener-8080-routeconfig-0\" virtual_hosts:{name:\"emissary-ingress-listener-8080-*\" domains:\"*\" routes:{match:{prefix:\"/ambassador/v0/check_ready\" case_sensitive:{value:true} runtime_fraction:{default_value:{numerator:100} runtime_key:\"routing.traffic_shift.cluster_127_0_0_1_8877_emissary\"} headers:{name:\"x-forwarded-proto\" exact_match:\"https\"}} route:{cluster:\"cluster_127_0_0_1_8877_emissary\" prefix_rewrite:\"/ambassador/v0/check_ready\" timeout:{seconds:10}}} routes:{match:{prefix:\"/ambassador/v0/check_ready\" case_sensitive:{value:true} runtime_fraction:{default_value:{numerator:100} runtime_key:\"routing.traffic_shift.cluster_127_0_0_1_8877_emissary\"}} redirect:{https_redirect:true}} routes:{match:{prefix:\"/ambassador/v0/check_alive\" case_sensitive:{value:true} runtime_fraction:{default_value:{numerator:100} runtime_key:\"routing.traffic_shift.cluster_127_0_0_1_8877_emissary\"} headers:{name:\"x-forwarded-proto\" exact_match:\"https\"}} route:{cluster:\"cluster_127_0_0_1_8877_emissary\" prefix_rewrite:\"/ambassador/v0/check_alive\" timeout:{seconds:10}}} routes:{match:{prefix:\"/ambassador/v0/check_alive\" case_sensitive:{value:true} runtime_fraction:{default_value:{numerator:100} runtime_key:\"routing.traffic_shift.cluster_127_0_0_1_8877_emissary\"}} redirect:{https_redirect:true}} routes:{match:{prefix:\"/ambassador/v0/\" case_sensitive:{value:true} runtime_fraction:{default_value:{numerator:100} runtime_key:\"routing.traffic_shift.cluster_127_0_0_1_8877_emissary\"} headers:{name:\"x-forwarded-proto\" exact_match:\"https\"}} route:{cluster:\"cluster_127_0_0_1_8877_emissary\" prefix_rewrite:\"/ambassador/v0/\" timeout:{seconds:10}}} routes:{match:{prefix:\"/ambassador/v0/\" case_sensitive:{value:true} runtime_fraction:{default_value:{numerator:100} runtime_key:\"routing.traffic_shift.cluster_127_0_0_1_8877_emissary\"}} redirect:{https_redirect:true}}} <nil>}]} " +
+		"{v8 map[emissary-ingress-listener-8080:{name:\"emissary-ingress-listener-8080\" address:{socket_address:{address:\"0.0.0.0\" port_value:8080}} filter_chains:{filter_chain_match:{} filters:{name:\"envoy.filters.network.http_connection_manager\" typed_config:{[type.googleapis.com/envoy.extensions.filters.network.http_connection_manager.v3.HttpConnectionManager]:{stat_prefix:\"ingress_http\" rds:{config_source:{ads:{} resource_api_version:V3} route_config_name:\"emissary-ingress-listener-8080-routeconfig-0\"} http_filters:{name:\"envoy.filters.http.cors\"} http_filters:{name:\"envoy.filters.http.router\"} http_protocol_options:{} server_name:\"envoy\" access_log:{name:\"envoy.access_loggers.file\" typed_config:{[type.googleapis.com/envoy.extensions.access_loggers.file.v3.FileAccessLog]:{path:\"/dev/fd/1\" log_format:{text_format_source:{inline_string:\"ACCESS [%START_TIME%] \\\"%REQ(:METHOD)% %REQ(X-ENVOY-ORIGINAL-PATH?:PATH)% %PROTOCOL%\\\" %RESPONSE_CODE% %RESPONSE_FLAGS% %BYTES_RECEIVED% %BYTES_SENT% %DURATION% %RESP(X-ENVOY-UPSTREAM-SERVICE-TIME)% \\\"%REQ(X-FORWARDED-FOR)%\\\" \\\"%REQ(USER-AGENT)%\\\" \\\"%REQ(X-REQUEST-ID)%\\\" \\\"%REQ(:AUTHORITY)%\\\" \\\"%UPSTREAM_HOST%\\\"\\n\"}}}}} use_remote_address:{value:true} normalize_path:{value:true}}}}} <nil>}]} " +
+		"{v8 map[tls-cert.emissary:{name:\"tls-cert.emissary\" tls_certificate:{certificate_chain:{inline_bytes:\"-----BEGIN CERTIFICATE-----\\nMIIEsDCCApgCCQD/WNUQQtHflzANBgkqhkiG9w0BAQsFADAaMRgwFgYDVQQDDA9h\\nbWJhc3NhZG9yLWNlcnQwHhcNMjIwNzI1MTk0OTI1WhcNMjIwODI0MTk0OTI1WjAa\\nMRgwFgYDVQQDDA9hbWJhc3NhZG9yLWNlcnQwggIiMA0GCSqGSIb3DQEBAQUAA4IC\\nDwAwggIKAoICAQC8Lo1RanFHlVyYnQ1fgJhx+Ojg/8/5u54Dr8jVkzxOjTeNi9Cc\\nu8WlBiS096l+z4s6YtcapT0ep6jLzaoFlCheTXJLfICk0WwLrHp2+wlHMfMS6Mcj\\nqko8G1XQU9VPhogiRGEd31zlRO/pIkYUo2WZ3yRNJShBUopZSi2DVF1M7uEZGaEC\\n9ks60Lt076AKNkw7LQvwOLfAE7e4yGyHjX3zAVihgIFU7spLYizc1O3VkgSxV8Rh\\nGyrlZVSMzedLas7aeHQxlHRYfe99/tQQz/bXJMm9ib82ncx0C3asXsSpAIcZVACU\\nIaecuttIgn3J13ebrGEKGDagdZRKB7G51d1BB57+2ZNNlimYYIA5ZL95+0ahEDtT\\nnwX8dVlHfM8EFI44Ed1N4KXqEzclsuycrkQX0KBeg/tQbk8sDJu+7VL88+4P12k7\\ng1EL/hducRXNzIqsNIq3FrToOEkKTwaaw/SP4wYcul/BsICvt/eRLNfEEDwLPhol\\nJB3h96MYo6lk8LbxzWy73hBrVgREsMGnCAl1zj2RaNoxjebHE2qWRPYFD+WLX9z+\\n4gEdKI/9UQ3GEtGFEQ09jBND2QG3x3iciPS0xRaMiOsC7DvXBBXcCeq+sw+F0ifG\\nN835khgEQEp14lcUbBcj8tunTle65Nt0ZGcFU4v+xCq7X1dK2aP5Jxr8qQIDAQAB\\nMA0GCSqGSIb3DQEBCwUAA4ICAQBGLPwUFXCSN0mdcwZFcppkjtwFwIZ/50vcOsxu\\nfl1FDUM7Y27g1R/j2Zm67TKMsc8aVY8Zrb7oVWWPM+ter+sKcUJSgW4Ttbqap3kB\\nJ6aMdVRGs4TCGeIRtBalIAC/uTISIqPfpruN8FkbKICvM7zAB/7CHEf8fOX7pxB6\\nI7TcMUm7VWrg/AT2EOw78yVlhHMutsVJrArmQeeL1URcaMgsQ3nvks6rmr1USDcg\\n/H2zmqQ5q+UbBWBA+SkANxiicLEDjG3040oBTThWT8iXl8nLYPmE/omTSD8Jn8dw\\n4M6CwwZszKb2hG3BM/vqM5bwZA7yC/ryVHh3H/Zq9MzXL0uQY/RJ7kCOegwyWXfW\\nIoqYG6Y3wdNF6c1elhYVS1yLqjoEKe53I26kPN+yIyD+4eoqfzl6g77TsNZn3HB5\\n5PEyaRRV+HjsR5J8hX6gbZWa2CJzMZcPOQP2iGVdWmDGr4jlE7G0GOuRYwB6r9nQ\\npwf3sUTcsz+lvZ+vVdlbd3hy7nvewZFWhECAH9kt+5lodDQwnDbsUTdhpdexxYSg\\nHtBAuVJFGQUraYDzTcN4xIq2BS8eNUoVfhzJ12CvWnAznRkq5+djGxOtGk2G1XsW\\nTyJZWozhvMD+Y2+Rb+5pZWMZCCvAVRICpuz2YBDuNrmXzu+7F5ZRHW6qlM5Afmt7\\nnWqjMA==\\n-----END CERTIFICATE-----\\n\"} private_key:{inline_bytes:\"-----BEGIN PRIVATE KEY-----\\n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\\nWei4PSpUZh51A/qMXOx3IdYgcL6Zlw==\\n-----END PRIVATE KEY-----\\n\"}} <nil>}]} " +
+		"{v8 map[]} " +
+		"{v8 map[]}]}" func=github.com/datawire/ambassador/v2/pkg/ambex.update file="/go/pkg/ambex/main.go:540" CMD=entrypoint PID=1 THREAD=/ambex/main-loop
+	time="2022-07-28 15:41:53.1453" level=info msg="+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==" func=github.com/datawire/ambassador/v2/pkg/ambex.update file="/go/pkg/ambex/main.go:541" CMD=entrypoint PID=1 THREAD=/ambex/main-loop
+
+
+
+	dlog.Info(ctx, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==")
+	dlog.Infof(ctx, "snapshot v2 : %v", snapshot)
+	dlog.Infof(ctx, "snapshot v3 : %v", snapshotv3)
+	dlog.Info(ctx, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==")
+
 	// This used to just directly update envoy. Since we want ratelimiting, we now send an
 	// Update object down the channel with a function that knows how to do the update if/when
 	// the ratelimiting logic decides.
@@ -544,7 +574,6 @@ func update(
 
 		return nil
 	}}
-
 	// We also need to pay attention to contexts here so we can shutdown properly. If we didn't
 	// have the context portion, the ratelimit goroutine could shutdown first and we could end
 	// up blocking here and never shutting down.
@@ -575,7 +604,7 @@ var _ ecp_log.Logger = logAdapterV3{}
 
 // Debugf implements ecp_log.Logger.
 func (l logAdapterBase) Debugf(format string, args ...interface{}) {
-	dlog.Debugf(context.TODO(), format, args...)
+	dlog.Infof(context.Background(), format, args...)
 }
 
 // Infof implements ecp_log.Logger.
@@ -595,57 +624,57 @@ func (l logAdapterBase) Errorf(format string, args ...interface{}) {
 
 // OnStreamOpen implements ecp_v2_server.Callbacks and ecp_v3_server.Callbacks.
 func (l logAdapterBase) OnStreamOpen(ctx context.Context, sid int64, stype string) error {
-	dlog.Debugf(ctx, "%v Stream open[%v]: %v", l.prefix, sid, stype)
+	dlog.Infof(ctx, "%v Stream open[%v]: %v", l.prefix, sid, stype)
 	return nil
 }
 
 // OnStreamClosed implements ecp_v2_server.Callbacks and ecp_v3_server.Callbacks.
 func (l logAdapterBase) OnStreamClosed(sid int64) {
-	dlog.Debugf(context.TODO(), "%v Stream closed[%v]", l.prefix, sid)
+	dlog.Infof(context.Background(), "%v Stream closed[%v]", l.prefix, sid)
 }
 
 // OnStreamRequest implements ecp_v2_server.Callbacks.
 func (l logAdapterV2) OnStreamRequest(sid int64, req *v2.DiscoveryRequest) error {
-	dlog.Debugf(context.TODO(), "V2 Stream request[%v] for type %s: %s", sid, req.TypeUrl, strings.Join(req.ResourceNames, ","))
+	dlog.Infof(context.Background(), "V2 Stream request[%v] for type %s: %s", sid, req.TypeUrl, strings.Join(req.ResourceNames, ","))
 	return nil
 }
 
 // OnStreamRequest implements ecp_v3_server.Callbacks.
 func (l logAdapterV3) OnStreamRequest(sid int64, req *v3discovery.DiscoveryRequest) error {
-	dlog.Debugf(context.TODO(), "V3 Stream request[%v] for type %s: %s", sid, req.TypeUrl, strings.Join(req.ResourceNames, ","))
+	dlog.Infof(context.Background(), "V3 Stream request[%v] for type %s: %s", sid, req.TypeUrl, strings.Join(req.ResourceNames, ","))
 	return nil
 }
 
 // OnStreamResponse implements ecp_v2_server.Callbacks.
 func (l logAdapterV2) OnStreamResponse(sid int64, req *v2.DiscoveryRequest, res *v2.DiscoveryResponse) {
-	dlog.Debugf(context.TODO(), "V2 Stream response[%v] for type %s: returning %d resources", sid, res.TypeUrl, len(res.Resources))
+	dlog.Infof(context.Background(), "V2 Stream response[%v] for type %s: returning %d resources", sid, res.TypeUrl, len(res.Resources))
 }
 
 // OnStreamResponse implements ecp_v3_server.Callbacks.
 func (l logAdapterV3) OnStreamResponse(sid int64, req *v3discovery.DiscoveryRequest, res *v3discovery.DiscoveryResponse) {
-	dlog.Debugf(context.TODO(), "V3 Stream response[%v] for type %s: returning %d resources: %v", sid, res.TypeUrl, len(res.Resources), res.Resources)
+	dlog.Infof(context.Background(), "V3 Stream response[%v] for type %s: returning %d resources: %v", sid, res.TypeUrl, len(res.Resources), res.Resources)
 }
 
 // OnFetchRequest implements ecp_v2_server.Callbacks.
 func (l logAdapterV2) OnFetchRequest(ctx context.Context, r *v2.DiscoveryRequest) error {
-	dlog.Debugf(ctx, "V2 Fetch request: %v", r)
+	dlog.Infof(ctx, "V2 Fetch request: %v", r)
 	return nil
 }
 
 // OnFetchRequest implements ecp_v3_server.Callbacks.
 func (l logAdapterV3) OnFetchRequest(ctx context.Context, r *v3discovery.DiscoveryRequest) error {
-	dlog.Debugf(ctx, "V3 Fetch request: %v", r)
+	dlog.Infof(ctx, "V3 Fetch request: %v", r)
 	return nil
 }
 
 // OnFetchResponse implements ecp_v2_server.Callbacks.
 func (l logAdapterV2) OnFetchResponse(req *v2.DiscoveryRequest, res *v2.DiscoveryResponse) {
-	dlog.Debugf(context.TODO(), "V2 Fetch response: %v -> %v", req, res)
+	dlog.Infof(context.Background(), "V2 Fetch response: %v -> %v", req, res)
 }
 
 // OnFetchResponse implements ecp_v3_server.Callbacks.
 func (l logAdapterV3) OnFetchResponse(req *v3discovery.DiscoveryRequest, res *v3discovery.DiscoveryResponse) {
-	dlog.Debugf(context.TODO(), "V3 Fetch response: %v -> %v", req, res)
+	dlog.Infof(context.Background(), "V3 Fetch response: %v -> %v", req, res)
 }
 
 func Main(
@@ -718,8 +747,8 @@ func Main(
 		var fastpathSnapshot *FastpathSnapshot
 		edsEndpoints := map[string]*v2.ClusterLoadAssignment{}
 		edsEndpointsV3 := map[string]*v3endpointconfig.ClusterLoadAssignment{}
-		sdsSecretsV2 := []*v2auth.Secret{}
-		sdsSecretsV3 := []*v3tlsconfig.Secret{}
+		var sdsSecretsV2 []*v2auth.Secret
+		var sdsSecretsV3 []*v3tlsconfig.Secret
 
 		// We always start by updating with a totally empty snapshot.
 		//
@@ -749,6 +778,14 @@ func Main(
 
 			select {
 			case <-sigCh:
+
+				dlog.Info(ctx, "-------------------------------------------------------------")
+				dlog.Info(ctx, "sigCH start")
+				dlog.Infof(ctx, "secrets v2 : %v", sdsSecretsV2)
+				dlog.Infof(ctx, "secrets v3 : %v", sdsSecretsV3)
+				dlog.Info(ctx, "sigCH end")
+				dlog.Info(ctx, "-------------------------------------------------------------")
+
 				err := update(
 					ctx,
 					args.snapdirPath,
@@ -768,6 +805,7 @@ func Main(
 					return err
 				}
 			case fpSnap := <-fastpathCh:
+
 				// Fastpath update. Grab new endpoints and update.
 				if fpSnap.Endpoints != nil {
 					edsEndpoints = fpSnap.Endpoints.ToMap_v2()
@@ -777,6 +815,14 @@ func Main(
 					sdsSecretsV2 = fpSnap.Secrets.ToV2List(ctx, fpSnap.ValidationGroups)
 					sdsSecretsV3 = fpSnap.Secrets.ToV3List(ctx, fpSnap.ValidationGroups)
 				}
+
+				dlog.Info(ctx, "-------------------------------------------------------------")
+				dlog.Info(ctx, "fastPathCH start")
+				dlog.Infof(ctx, "secrets v2 : %v", sdsSecretsV2)
+				dlog.Infof(ctx, "secrets v3 : %v", sdsSecretsV3)
+				dlog.Info(ctx, "fastPathCH end")
+				dlog.Info(ctx, "-------------------------------------------------------------")
+
 				fastpathSnapshot = fpSnap
 				err := update(
 					ctx,
@@ -798,6 +844,13 @@ func Main(
 				}
 			case <-watcher.Events:
 				// Non-fastpath update. Just update.
+
+				dlog.Info(ctx, "-------------------------------------------------------------")
+				dlog.Info(ctx, "watcherEvents start")
+				dlog.Infof(ctx, "secrets v2 : %v", sdsSecretsV2)
+				dlog.Infof(ctx, "secrets v3 : %v", sdsSecretsV3)
+				dlog.Info(ctx, "watcherEvents end")
+				dlog.Info(ctx, "-------------------------------------------------------------")
 				err := update(
 					ctx,
 					args.snapdirPath,

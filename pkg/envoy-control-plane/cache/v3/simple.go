@@ -18,6 +18,7 @@ package cache
 import (
 	"context"
 	"fmt"
+	"github.com/datawire/dlib/dlog"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -194,7 +195,15 @@ func (cache *snapshotCache) SetSnapshot(node string, snapshot Snapshot) error {
 	// update the existing entry
 	cache.snapshots[node] = snapshot
 
-	// trigger existing watches for which version changed
+	dlog.Info(context.Background(), "ZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZ")
+	dlog.Info(context.Background(), cache.status[node])
+	dlog.Info(context.Background(), "ZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZZXCZZ")
+
+
+
+
+
+// trigger existing watches for which version changed
 	if info, ok := cache.status[node]; ok {
 		info.mu.Lock()
 		for id, watch := range info.watches {
@@ -203,7 +212,17 @@ func (cache *snapshotCache) SetSnapshot(node string, snapshot Snapshot) error {
 				if cache.log != nil {
 					cache.log.Debugf("respond open watch %d%v with new version %q", id, watch.Request.ResourceNames, version)
 				}
+
+				dlog.Info(context.Background(), "MMMMMMMMMMMMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNM")
+				dlog.Infof(context.Background(), watch.Request.TypeUrl)
+				dlog.Info(context.Background(), "MMMMMMMMMMMMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNMNM")
+
 				resources := snapshot.GetResourcesAndTtl(watch.Request.TypeUrl)
+
+				dlog.Info(context.Background(), "44444444444444444444444444444444444444444444444444")
+				dlog.Infof(context.Background(), "resources %v", resources)
+				dlog.Info(context.Background(), "44444444444444444444444444444444444444444444444444")
+
 				cache.respond(watch.Request, watch.Response, resources, version, false)
 
 				// discard the watch

@@ -480,10 +480,11 @@ func (sh *SnapshotHolder) K8sUpdate(
 				}
 			case "Secret":
 				updateSecrets = true
-			// If TLSContext or Host delta reference a secret, we want to make sure that we're sending them over.
-			// This is kinda brute force since Hosts and TLSContexts don't have to refer to secrets.
-			// Ideally ReconcileSecrets should handle figuring out whether we need to send over update secrets.
-			// However we don't really expect that many Hosts or TLSContext to be created anyway.
+				// If TLSContext or Host delta reference a secret, we want to make sure that we're sending them over.
+				// This is kinda brute force since Hosts and TLSContexts don't have to refer to secrets.
+				// Ideally ReconcileSecrets should handle figuring out whether we need to send over update secrets.
+				// However we don't really expect that many Hosts or TLSContext to be created anyway.
+				fastpathOnly = false
 			case "Host", "TLSContext":
 				updateSecrets = true
 				fastpathOnly = false
