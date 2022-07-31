@@ -72,6 +72,16 @@ it will be removed; but as it won't be user-visible this isn't considered a brea
 
 ## RELEASE NOTES
 
+## [3.1.1] TBD
+[3.1.1]: https://github.com/emissary-ingress/emissary/compare/v3.1.0...v3.1.1
+
+### Emissary-ingress and Ambassador Edge Stack
+
+- Bugfix: Distinct services with names that are the same in the first forty characters will no
+  longer be incorrectly mapped to the same cluster. ([#4354])
+
+[#4354]: https://github.com/emissary-ingress/emissary/issues/4354
+
 ## [3.1.0] TBD
 [3.1.0]: https://github.com/emissary-ingress/emissary/compare/v3.0.0...v3.1.0
 

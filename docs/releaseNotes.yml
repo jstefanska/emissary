@@ -32,6 +32,18 @@
 
 changelog: https://github.com/emissary-ingress/emissary/blob/$branch$/CHANGELOG.md
 items:
+  - version: 3.1.1
+    date: 'TBD'
+    notes:
+      - title: Correctly manage cluster names when service names are very long
+        type: bugfix
+        body: >-
+          Distinct services with names that are the same in the first forty characters
+          will no longer be incorrectly mapped to the same cluster.
+        github:
+        - title: "#4354"
+          link: https://github.com/emissary-ingress/emissary/issues/4354
+
   - version: 3.1.0
     date: 'TBD'
     notes:
