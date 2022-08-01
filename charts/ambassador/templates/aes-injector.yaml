@@ -129,7 +129,7 @@ data:
   crt.pem: {{ ternary (b64enc $ca.Cert) (b64enc (trim .Values.servicePreview.trafficAgent.injector.crtPEM)) (empty .Values.servicePreview.trafficAgent.injector.crtPEM) }}
   key.pem: {{ ternary (b64enc $ca.Key) (b64enc (trim .Values.servicePreview.trafficAgent.injector.keyPEM)) (empty .Values.servicePreview.trafficAgent.injector.keyPEM) }}
 ---
-apiVersion: admissionregistration.k8s.io/v1beta1
+apiVersion: admissionregistration.k8s.io/v1
 kind: MutatingWebhookConfiguration
 metadata:
   name: {{ include "ambassador.fullname" . }}-injector-webhook-config
